@@ -12,22 +12,22 @@ import Loader from "./Loader";
 
 function Scene() {
   return (
-    <div className="w-[100vw] h-[100vh]">
-      <Canvas camera={{ position: [76, 12, -24] }}>
+    <div className='w-screen h-screen'>
+      <Canvas
+      
+      
+      >
+        <fog attach='fog' args={["#fff", 0, 110]} />
+        <Environment preset='sunset' />
+        <ambientLight color={0xa0a0fc} intensity={0.82} />
+        <directionalLight position={[-10, 10, 10]} intensity={1.96} />
+
+        <directionalLight
+          color={0xe8c37b}
+          position={[-69, 44, 14]}
+          intensity={1.96}
+        />
         <Suspense fallback={<Loader />}>
-          <fog attach="fog" args={["#fff", 0, 110]} />
-          <Environment preset="dawn" />
-          {/* <ambientLight color={0xffa500} intensity={2} /> */}
-          <directionalLight
-            color={0xffa500}
-            position={[0, 10, 0]}
-            intensity={5}
-          />
-          <directionalLight
-            color={0xffa500}
-            position={[10, 10, 10]}
-            intensity={5}
-          />
           <Model />
         </Suspense>
       </Canvas>

@@ -9,15 +9,17 @@ import Car from "./Car";
 import Helicopter from "./Helicopter";
 import Birds from "./Birds";
 import { gsap } from "gsap";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree, useLoader } from "@react-three/fiber";
+import * as TWEEN from "three/examples/jsm/libs/tween.module.js";
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF(
-    "/models/isometric-cityscape13-transformed.glb"
-  );
+  const { nodes, materials } = useGLTF("/models/isometric-cityscape13.glb");
   const [buildingState, setBuildingState] = useState(0);
   const { camera } = useThree();
   const buildingRef = useRef();
+  const groupRef = useRef();
+  const ferrisWheelRef = useRef();
+  const [controlsEnabled, setControlsEnabled] = useState(false);
 
   //float camera using useFRame
   // const minY = 10;
@@ -34,84 +36,110 @@ export function Model(props) {
   //   }
   // });
 
+  const { position } = useControls("pos", {
+    position: {
+      value: [0, 0, 0],
+      steps: 10,
+    },
+  });
+
+  // useEffect(() => {
+  //   camera.position.set(...position);
+  // }, [position]);
+
   useEffect(() => {
-    console.log(camera.position);
-    if (camera) {
-      gsap.to(camera.position, {
-        duration: 12,
+    if (!groupRef.current) return;
+
+    if (controlsEnabled) return;
+    gsap.fromTo(
+      camera.position,
+      {
+        x: -20,
+        y: 4,
+        z: -10,
+      },
+      {
+        duration: 10,
         x: 20,
-        y: 13,
-        z: 40,
+
+        delay: 1,
+        ease: TWEEN.Easing.Quartic.InOut,
 
         onUpdate: () => {
           camera.lookAt(...buildingRef.current.position);
         },
-      });
-    }
-  }, [camera]);
+        onComplete: () => {
+          setControlsEnabled(true);
+        },
+      }
+    );
+  }, [groupRef.current]);
 
-  useEffect(() => {
-    switch (buildingState) {
-      // case 0:
-      //   gsap.to(camera.position, {
-      //     duration: 5,
-      //     x: 20,
-      //     y: 13,
-      //     z: 40,
-      //   });
-      case 1:
-        gsap.to(camera.position, {
-          duration: 5,
-          x: -6, //-10
-          y: 2,
-          z: 14, //12
+  useFrame(() => {
+    if (ferrisWheelRef.current) ferrisWheelRef.current.rotation.y += 0.03;
+  });
 
-          onUpdate: () => {
-            camera.lookAt(
-              buildingRef.current.position.x,
-              buildingRef.current.position.y,
-              buildingRef.current.position.z
-            );
-          },
-        });
-        break;
-      case 2:
-        gsap.to(camera.position, {
-          duration: 1,
-          x: 10, // Example x position for building 2
-          y: 10, // Example y position for building 2
-          z: 10, // Example z position for building 2
-          onComplete: () => {
-            gsap.to(camera.rotation, {
-              duration: 0.5,
-              x: 0,
-              y: 0.5,
-              z: 0,
-            });
-          },
-          onUpdate: () => {
-            camera.lookAt(
-              buildingRef.current.position.x,
-              buildingRef.current.position.y,
-              buildingRef.current.position.z
-            );
-          },
-        });
-        break;
-      // Add more cases for other buildings as needed
-      default:
-        break;
-    }
-  }, [buildingState]);
+  // useEffect(() => {
+  //   switch (buildingState) {
+  //     // case 0:
+  //     //   gsap.to(camera.position, {
+  //     //     duration: 5,
+  //     //     x: 20,
+  //     //     y: 13,
+  //     //     z: 40,
+  //     //   });
+  //     case 1:
+  //       gsap.to(camera.position, {
+  //         duration: 5,
+  //         x: -6, //-10
+  //         y: 2,
+  //         z: 14, //12
+
+  //         onUpdate: () => {
+  //           camera.lookAt(
+  //             buildingRef.current.position.x,
+  //             buildingRef.current.position.y,
+  //             buildingRef.current.position.z
+  //           );
+  //         },
+  //       });
+  //       break;
+  //     case 2:
+  //       gsap.to(camera.position, {
+  //         duration: 1,
+  //         x: 10, // Example x position for building 2
+  //         y: 10, // Example y position for building 2
+  //         z: 10, // Example z position for building 2
+  //         onComplete: () => {
+  //           gsap.to(camera.rotation, {
+  //             duration: 0.5,
+  //             x: 0,
+  //             y: 0.5,
+  //             z: 0,
+  //           });
+  //         },
+  //         onUpdate: () => {
+  //           camera.lookAt(
+  //             buildingRef.current.position.x,
+  //             buildingRef.current.position.y,
+  //             buildingRef.current.position.z
+  //           );
+  //         },
+  //       });
+  //       break;
+  //     // Add more cases for other buildings as needed
+  //     default:
+  //       break;
+  //   }
+  // }, [buildingState]);
 
   return (
-    <PresentationControls polar={[0, 0]}>
+    <PresentationControls enabled={controlsEnabled} polar={[0, 0]}>
       <group
         {...props}
+        ref={groupRef}
         dispose={null}
-        position={[0, -4.500000000000001, -12.999999999999986]}
-        scale={3}
-        rotation={[0, 4, 0]}
+
         // position={[0, -6, 0]}
       >
         <mesh
@@ -276,7 +304,7 @@ export function Model(props) {
           scale={0.05}
         />
         <group
-          name="buildings"
+          name='buildings'
           position={[0.4, 0.36, 0.53]}
           rotation={[0, Math.PI / 2, 0]}
           scale={0.65}
@@ -308,7 +336,7 @@ export function Model(props) {
           />
         </group>
         <group
-          name="ferriswheel"
+          name='ferriswheel'
           position={[3.7, 1.49, -3.29]}
           rotation={[Math.PI / 2, 1.57, 0]}
           scale={[-1, 0.15, 1]}
@@ -352,9 +380,10 @@ export function Model(props) {
             material={materials.LightMetal}
             position={[0, -1.56, 0]}
             scale={0.96}
+            ref={ferrisWheelRef}
           />
         </group>
-        <group position={[3.25, 0.36, 2.93]} scale={0.65} name="circlebase">
+        <group position={[3.25, 0.36, 2.93]} scale={0.65} name='circlebase'>
           <mesh
             geometry={nodes.CircleBuildBase004.geometry}
             material={materials.CircularBuildMain}
@@ -466,6 +495,7 @@ export function Model(props) {
             material={materials.DarkMetal}
           />
         </group>
+
         <group
           position={[2.91, 0.36, 0.55]}
           rotation={[0, -Math.PI / 2, 0]}
@@ -778,20 +808,7 @@ export function Model(props) {
             material={materials["Rocks.001"]}
           />
         </group>
-        <group
-          position={[-3.06, 2.02, 4.13]}
-          rotation={[0, Math.PI / 4, 0]}
-          scale={[0.26, 0.21, 0.26]}
-        >
-          <mesh
-            geometry={nodes.Circle015.geometry}
-            material={materials.Metal}
-          />
-          <mesh
-            geometry={nodes.Circle015_1.geometry}
-            material={materials["Material.001"]}
-          />
-        </group>
+
         <mesh
           geometry={nodes.CityBase002.geometry}
           material={materials.Metal}
@@ -803,4 +820,4 @@ export function Model(props) {
   );
 }
 
-useGLTF.preload("/isometric-cityscape13-transformed.glb");
+useGLTF.preload("/isometric-cityscape13.glb");
