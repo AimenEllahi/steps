@@ -9,48 +9,65 @@ import Sidebar from "./Sidebar";
 import Loader from "./Loader";
 import DescriptionDisplay from "./DescriptionDisplay";
 
+const Annontations = [
+  {
+    id: 1,
+    name: "Annontation 1",
+    for: "Step 1",
+    description: "Description for Step 1.",
+    visible: true,
+  },
+  {
+    id: 2,
+    name: "Annontation 2",
+    for: "Step 2",
+    description: "Description for Step 2.",
+    visible: true,
+  },
+  {
+    id: 3,
+    name: "Annontation 3",
+    for: "Step 3",
+    description: "Description for Step 3.",
+    visible: true,
+  },
+];
+
 function Scene() {
   const [models, setModels] = useState([
     {
       name: "Step 1",
       visible: true,
-      description: "Description for Step 1.",
-      annontationVisible: true,
     },
     {
       name: "Step 2",
       visible: true,
-      description: "Description for Step 2.",
-      annontationVisible: true,
     },
     {
       name: "Step 3",
       visible: true,
-      description: "Description for Step 3.",
-      annontationVisible: true,
     },
   ]);
 
+  const [annontations, setAnnontations] = useState(Annontations);
+
   const [annontation, setAnnontation] = useState();
-  const [selectedModelDescription, setSelectedModelDescription] = useState("");
 
   const toggleModelVisibility = (index) => {
     const updatedModels = [...models];
     updatedModels[index].visible = !updatedModels[index].visible;
-    if (!updatedModels[index].visible) {
-      setSelectedModelDescription("");
-    }
+
     setModels(updatedModels);
   };
 
-  const toggleDescriptionVisibility = (index, value) => {
-    let updatedModels = [...models];
-    updatedModels[index].annontationVisible = value;
+  const toggleDescriptionVisibility = (id, value) => {
+    let updatedAnnontations = [...annontations];
+    //find model with id
+    const index = updatedAnnontations.findIndex((x) => x.id === id);
+    updatedAnnontations[index].visible = value;
 
-    setModels([...updatedModels]);
+    setAnnontations([...updatedAnnontations]);
   };
-
-  console.log(models[annontation]);
 
   return (
     <div className='w-screen h-screen flex'>
@@ -74,13 +91,22 @@ function Scene() {
           <OrbitControls />
           <Suspense fallback={<Loader />}>
             {models[0].visible && (
-              <Step1 model={models[0]} setAnnontation={setAnnontation} />
+              <Step1
+                annontation1={annontations.filter((x) => x.id === 1)[0].visible}
+                setAnnontation={setAnnontation}
+              />
             )}
             {models[1].visible && (
-              <Step2 model={models[1]} setAnnontation={setAnnontation} />
+              <Step2
+                annontation2={annontations.filter((x) => x.id === 2)[0].visible}
+                setAnnontation={setAnnontation}
+              />
             )}
             {models[2].visible && (
-              <Step3 model={models[2]} setAnnontation={setAnnontation} />
+              <Step3
+                annontation3={annontations.filter((x) => x.id === 3)[0].visible}
+                setAnnontation={setAnnontation}
+              />
             )}
           </Suspense>
 
@@ -97,13 +123,14 @@ function Scene() {
       </div>
       <Sidebar
         models={models}
+        annontations={annontations}
         toggleModelVisibility={toggleModelVisibility}
         toggleDescriptionVisibility={toggleDescriptionVisibility}
       />
       {annontation && (
         <DescriptionDisplay
           onClose={() => setAnnontation(null)}
-          description={models[annontation - 1].description}
+          description={annontations[annontation - 1].description}
         />
       )}
     </div>

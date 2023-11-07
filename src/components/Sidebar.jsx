@@ -3,6 +3,7 @@ import React from "react";
 
 function Sidebar({
   models,
+  annontations,
   toggleModelVisibility,
   toggleDescriptionVisibility,
 }) {
@@ -20,17 +21,30 @@ function Sidebar({
           />
           <p className='text-white'>{model.name}</p>
           {model.visible && (
-            <>
-              <input
-                type='checkbox'
-                checked={model.annontationVisible}
-                onChange={(e) =>
-                  toggleDescriptionVisibility(index, e.target.checked)
-                }
-                className='ml-2 mr-2'
-              />
-              <p className='text-white'>Annotation</p>
-            </>
+            <div className='flex flex-col justify-end items-end'>
+              {annontations
+                .filter((annontation) => annontation.for === model.name)
+                .map((annontation, i) => {
+                  console.log(annontation);
+                  return (
+                    <div className='flex items-center'>
+                      <input
+                        key={i}
+                        type='checkbox'
+                        checked={annontation.visible}
+                        onChange={(e) =>
+                          toggleDescriptionVisibility(
+                            annontation.id,
+                            e.target.checked
+                          )
+                        }
+                        className='ml-2 mr-2'
+                      />
+                      <p className='text-white'>{annontation.name}</p>
+                    </div>
+                  );
+                })}
+            </div>
           )}
         </div>
       ))}

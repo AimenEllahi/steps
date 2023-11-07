@@ -1,40 +1,30 @@
-import React, { useRef } from "react";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { useLoader } from "@react-three/fiber";
-import { TextureLoader } from "three";
+import React from "react";
+import AnnontationSprite from "./Annontation";
+import { useGLTF } from "@react-three/drei";
 
-function Step3({ model, setAnnontation }) {
-  const gltf = useLoader(GLTFLoader, "/models/Step3.glb");
-
-  const texture = useLoader(TextureLoader, "/blue.png");
+const Step3 = ({ annontation3, setAnnontation }) => {
+  const { nodes, materials } = useGLTF("/models/Step3.glb");
   const handleClick = () => {
     setAnnontation(3);
   };
 
   return (
-    <group position={[0, 0, 0]} rotation={[0, 0, 0]}>
-      <primitive object={gltf.scene} dispose={null} scale={40}>
-        {model.annontationVisible && (
-          //Change this position to change position of annotation
-          <mesh
-            onPointerOver={() => {
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={() => {
-              document.body.style.cursor = "auto";
-            }}
-            position={[0, 0.03, -0.01]}
-            scale={0.005}
-            onClick={handleClick}
-          >
-            <sprite>
-              <spriteMaterial attach='material' map={texture} />
-            </sprite>
-          </mesh>
-        )}
-      </primitive>
+    <group dispose={null} scale={40}>
+      <mesh
+        geometry={nodes.insula.geometry}
+        material={materials["material_0.002"]}
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        {/* //Change this position to change position of annotation */}
+        <AnnontationSprite
+          position={[0, -0.01, -0.02]}
+          handleClick={handleClick}
+          isVisible={annontation3}
+        />
+      </mesh>
     </group>
   );
-}
+};
 
+useGLTF.preload("/models/Step3.glb");
 export default Step3;
