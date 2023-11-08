@@ -70,11 +70,11 @@ function Scene() {
   };
 
   return (
-    <div className='w-screen h-screen flex'>
-      <div className='w-4/5'>
+    <div className="w-screen h-screen flex flex-col lg:flex-row">
+      <div className="lg:w-4/5 w-full lg:h-[100vh] h-[70vh]">
         <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 5, 10], fov: 50 }}>
-          <fog attach='fog' args={["#fff", 0, 110]} />
-          <Environment preset='sunset' />
+          <fog attach="fog" args={["#fff", 0, 110]} />
+          <Environment preset="sunset" />
           <ambientLight intensity={0.5} />
           <directionalLight
             castShadow
@@ -121,18 +121,20 @@ function Scene() {
           />
         </Canvas>
       </div>
-      <Sidebar
-        models={models}
-        annontations={annontations}
-        toggleModelVisibility={toggleModelVisibility}
-        toggleDescriptionVisibility={toggleDescriptionVisibility}
-      />
-      {annontation && (
-        <DescriptionDisplay
-          onClose={() => setAnnontation(null)}
-          description={annontations[annontation - 1].description}
+      <div>
+        <Sidebar
+          models={models}
+          annontations={annontations}
+          toggleModelVisibility={toggleModelVisibility}
+          toggleDescriptionVisibility={toggleDescriptionVisibility}
         />
-      )}
+        {annontation && (
+          <DescriptionDisplay
+            onClose={() => setAnnontation(null)}
+            description={annontations[annontation - 1].description}
+          />
+        )}
+      </div>
     </div>
   );
 }
