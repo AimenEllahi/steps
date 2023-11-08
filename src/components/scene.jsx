@@ -69,9 +69,17 @@ function Scene() {
 
   const toggleDescriptionVisibility = (id, value) => {
     let updatedAnnontations = [...annontations];
+
     //find model with id
     const index = updatedAnnontations.findIndex((x) => x.id === id);
-    updatedAnnontations[index].visible = value;
+    const model = updatedAnnontations[index].for;
+
+    //find model with name
+    updatedAnnontations.map((x) => {
+      if (x.for === model) {
+        x.visible = value;
+      }
+    });
 
     setAnnontations([...updatedAnnontations]);
   };
