@@ -4,8 +4,8 @@ import { useGLTF } from "@react-three/drei";
 
 const Step3 = ({ annontation3, setAnnontation }) => {
   const { nodes, materials } = useGLTF("/models/Step3.glb");
-  const handleClick = () => {
-    setAnnontation(3);
+  const handleClick = (id) => {
+    setAnnontation(id);
   };
 
   return (
@@ -18,7 +18,7 @@ const Step3 = ({ annontation3, setAnnontation }) => {
         {/* //Change this position to change position of annotation */}
         <AnnontationSprite
           position={[0, -0.01, -0.02]}
-          handleClick={handleClick}
+          handleClick={() => handleClick(3)}
           isVisible={annontation3}
         />
       </mesh>

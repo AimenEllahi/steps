@@ -31,6 +31,13 @@ const Annontations = [
     description: "Description for Step 3.",
     visible: true,
   },
+  {
+    id: 4,
+    name: "Annontation 4",
+    for: "Step 1",
+    description: "Description for Step 4.",
+    visible: true,
+  },
 ];
 
 function Scene() {
@@ -70,11 +77,11 @@ function Scene() {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col lg:flex-row">
-      <div className="lg:w-4/5 w-full lg:h-[100vh] h-[70vh]">
+    <div className='w-screen h-screen flex flex-col lg:flex-row'>
+      <div className='lg:w-4/5 w-full lg:h-[100vh] h-[70vh]'>
         <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 5, 10], fov: 50 }}>
-          <fog attach="fog" args={["#fff", 0, 110]} />
-          <Environment preset="sunset" />
+          <fog attach='fog' args={["#fff", 0, 110]} />
+          <Environment preset='sunset' />
           <ambientLight intensity={0.5} />
           <directionalLight
             castShadow
@@ -93,6 +100,7 @@ function Scene() {
             {models[0].visible && (
               <Step1
                 annontation1={annontations.filter((x) => x.id === 1)[0].visible}
+                annontation4={annontations.filter((x) => x.id === 4)[0].visible}
                 setAnnontation={setAnnontation}
               />
             )}
